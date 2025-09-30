@@ -3,16 +3,14 @@
 # Respetando las restricciones de permisos reducidos (sin creación de roles IAM)
 
 name: AWS Lambda DynamoDB S3 Laboratory
-description: |
-  Pipeline automatizado para crear:
-  - Tabla DynamoDB (ItemsTable)
-  - Función Lambda para gestión de items (ItemsFunction)
-  - API Gateway para items (ItemsAPI)
-  - Bucket S3 para gestión de archivos
-  - Función Lambda para gestión de archivos (S3FileManager)
-  - API Gateway para archivos (FileManagementAPI)
 
-# Configuración de GitHub Actions
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -95,11 +93,11 @@ jobs:
           # Crear el paquete ZIP para la función Lambda
           cd /tmp
           zip items-function.zip items-function.js
-          # Crear la función Lambda usando el rol existente LabRole
+          # Crear la función Lambda usando el rol existente LambdaAccessToDynamoDB
           aws lambda create-function \
             --function-name ItemsFunction \
             --runtime nodejs16.x \
-            --role arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/LabRole \
+            --role arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/LambdaAccessToDynamoDB \
             --handler items-function.handler \
             --zip-file fileb:///tmp/items-function.zip \
             --region us-east-1
@@ -216,11 +214,11 @@ jobs:
           # Crear el paquete ZIP para la función Lambda
           cd /tmp
           zip s3-function.zip s3-function.js
-          # Crear la función Lambda usando el rol existente LabRole
+          # Crear la función Lambda usando el rol existente LambdaAccessToDynamoDB
           aws lambda create-function \
             --function-name S3FileManager \
             --runtime nodejs16.x \
-            --role arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/LabRole \
+            --role arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/LambdaAccessToDynamoDB \
             --handler s3-function.handler \
             --zip-file fileb:///tmp/s3-function.zip \
             --region us-east-1
