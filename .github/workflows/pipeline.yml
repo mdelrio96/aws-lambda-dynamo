@@ -125,6 +125,7 @@ jobs:
             --integration-type AWS_PROXY \
             --integration-method POST \
             --integration-uri arn:aws:lambda:us-east-1:$(aws sts get-caller-identity --query Account --output text):function:ItemsFunction \
+            --payload-format-version "2.0" \
             --region us-east-1 \
             --query 'IntegrationId' \
             --output text)
@@ -245,6 +246,7 @@ jobs:
             --integration-type AWS_PROXY \
             --integration-method POST \
             --integration-uri arn:aws:lambda:us-east-1:$(aws sts get-caller-identity --query Account --output text):function:S3FileManager \
+            --payload-format-version "2.0" \
             --region us-east-1 \
             --query 'IntegrationId' \
             --output text)
